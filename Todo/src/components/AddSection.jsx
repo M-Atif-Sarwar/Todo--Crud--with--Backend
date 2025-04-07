@@ -1,39 +1,56 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addTodo, updateTodo } from '../store/slices/TodoSlice';
+import { addToDB, addTodo, getallData, updateData, updateTodo } from '../store/slices/TodoSlice';
 const AddSection = () => {
-     const [content,setContent]=useState('');
+      //states for input boxes
+      const [content,setContent]=useState('');
       const [taskDate,setTaskDate]=useState('');
-
-       // Todo contain todo that need to be updated
-      const Todo=useSelector((state)=>state.todoUpdate)
-      console.log(Todo)
-
+       
+      // selector to select from Redux slices/store and disptach
+      const itemUpdate=useSelector((state)=>state.todoUpdate)
       const dispatch=useDispatch()
-      const dataHandler = (e) => {
-        if(Todo){
-            // it update existing todo
-            dispatch(updateTodo({ id: Todo.id, content, taskDate }));
+      
+      // Sending Data functionality
+      const dataHandler =(e) => {
+        e.preventDefault()
+        const localTodo={content,taskDate}
+  
+        // saving data to database and returning response
+
+        // checking if there any edit to todo then send it to other action
+        if (itemUpdate) {
+        const toUpdate={content,taskDate,id:itemUpdate._id}
+         // adding edit one
+        dispatch(updateData(toUpdate))
+          .then((resultAction) => {
+        if (addToDB.fulfilled.match(resultAction)) {
+            console.log("Todo saved successfully:", resultAction.payload);
+        } else {
+            console.error("Failed to save todo:", resultAction.error);
         }
-        else{
-            // it add new add todo item
-            dispatch(addTodo({content,taskDate}));
-        } 
-        
-        setContent('')
-        setTaskDate('')
-      };
+    });
+          // adding to
+        } else {
+          dispatch(addToDB(localTodo))
+          .then((resultAction) => {
+        if (addToDB.fulfilled.match(resultAction)) {
+            console.log("Todo saved successfully:", resultAction.payload);
+        } else {
+            console.error("Failed to save todo:", resultAction.error);
+        }
+    });
+        }       
+      }; 
 
 // useeffect will update ui if todo exist
       useEffect(() => {
-        if (Todo && Todo.id) {
-          setContent(Todo.content);
-          setTaskDate(Todo.taskDate);
+        if (itemUpdate) {
+          setContent(itemUpdate.content);
+          setTaskDate(itemUpdate.taskDate);
         }
-      }, [Todo]);
+      }, [itemUpdate]);
 
-      
   return (
     <>
 <div className='flex justify-center items-center  w-full'>
@@ -51,7 +68,9 @@ const AddSection = () => {
           className={`px-4  text-white font-bold rounded-lg 
             ${(content && taskDate ? 'bg-slate-500' :'bg-slate-500 bg-opacity-50 cursor-not-allowed')}`}
           onClick={dataHandler}
-          >{Todo ? 'Upate' :'Add'}</button>
+          >
+            {itemUpdate ? 'Upate' :'Add'}
+            </button>
 
       </div>
       </div>
