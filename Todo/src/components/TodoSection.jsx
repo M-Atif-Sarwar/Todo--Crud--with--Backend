@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from 'react-redux';
 import { editTodo } from '../store/slices/TodoUpdateSlice';
 import { deleteTodo } from '../store/slices/TodoSlice';
+import { dateConversion } from '../utils/dateConversion';
+
 const TodoSection = () => {
     const todo=useSelector((state)=>state.todo);
     const dispatch=useDispatch()
@@ -25,8 +26,9 @@ const TodoSection = () => {
    <>
    
    { 
-
+  
    todo && todo.Todo.map((item)=>{
+     
       return  <div className='flex justify-center items-center w-full ' key={item._id}>
          
       <div 
@@ -39,7 +41,7 @@ const TodoSection = () => {
 
        <input type="text" 
        className='h-10 rounded-lg px-3'
-       value={item.taskDate}
+       value={dateConversion(item.taskDate)}
        />
         
         <div className='flex justify-center items-center gap-8 col-span-1  '>

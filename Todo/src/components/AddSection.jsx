@@ -2,6 +2,7 @@ import React from 'react'
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToDB, addTodo, getallData, updateData, updateTodo } from '../store/slices/TodoSlice';
+import { dateConversion } from '../utils/dateConversion';
 const AddSection = () => {
       //states for input boxes
       const [content,setContent]=useState('');
@@ -43,11 +44,14 @@ const AddSection = () => {
         }       
       }; 
 
+  
 // useeffect will update ui if todo exist
       useEffect(() => {
         if (itemUpdate) {
+          const newdate=itemUpdate.taskDate.split('T')[0]
           setContent(itemUpdate.content);
-          setTaskDate(itemUpdate.taskDate);
+          setTaskDate(newdate);
+          
         }
       }, [itemUpdate]);
 
